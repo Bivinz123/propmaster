@@ -4,10 +4,12 @@ import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Plus, TrendingUp, TrendingDown, DollarSign } from 'lucide-react'
+import { Plus, TrendingUp, TrendingDown, DollarSign, Download } from 'lucide-react'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { AddPaymentForm } from '@/components/finances/AddPaymentForm'
 import { AddExpenseForm } from '@/components/finances/AddExpenseForm'
+import { FinancialCharts } from '@/components/finances/FinancialCharts'
+import { exportToCSV, prepareFinancialDataForExport } from '@/lib/exportUtils'
 
 interface Payment {
   id: string
@@ -65,6 +67,12 @@ export default function FinancesPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleExport = () => {
+    const exportData = prepareFinancialDataForExport(payments, expenses)
+    const date = new Date().toISOString().split('T')[0]
+    exportToCSV(exportData, `propmaster-financial-report-${date}`)
   }
 
   // Calculate totals
@@ -125,6 +133,10 @@ export default function FinancesPage() {
           </p>
         </div>
         <div className="flex gap-2">
+          <Button variant="outline" onClick={handleExport}>
+            <Download className="mr-2 h-4 w-4" />
+            Export CSV
+          </Button>
           <Button onClick={() => setShowPaymentForm(true)}>
             <Plus className="mr-2 h-4 w-4" />
             Record Payment
@@ -196,6 +208,9 @@ export default function FinancesPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Charts */}
+      <FinancialCharts payments={payments} expenses={expenses} />
 
       {/* Transactions List */}
       <Card>
