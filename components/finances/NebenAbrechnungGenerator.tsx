@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Select } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
 import { formatCurrency, formatDate } from '@/lib/utils'
+import { generateNebenkostenabrechnungPDF } from '@/lib/pdfUtils'
 import { FileText, Download } from 'lucide-react'
 
 interface Tenant {
@@ -62,8 +63,15 @@ export function NebenAbrechnungGenerator() {
   }
 
   const downloadPDF = () => {
-    // TODO: Implement PDF generation
-    alert('PDF generation coming soon!')
+    if (!report) return
+
+    try {
+      const pdf = generateNebenkostenabrechnungPDF(report)
+      pdf.save(`Nebenkostenabrechnung-${report.tenant.name.replace(/\s+/g, '-')}-${report.period.year}.pdf`)
+    } catch (error) {
+      console.error('Error generating PDF:', error)
+      alert('Failed to generate PDF. Please try again.')
+    }
   }
 
   const categoryLabels: Record<string, string> = {
