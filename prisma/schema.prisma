@@ -1,0 +1,161 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String     @id @default(cuid())
+  email      String     @unique
+  name       String
+  role       Role       @default(MANAGER)
+  createdAt  DateTime   @default(now())
+  properties Property[]
+}
+
+model Property {
+  id            String       @id @default(cuid())
+  address       String
+  city          String
+  postalCode    String
+  type          PropertyType
+  units         Int
+  purchasePrice Decimal?
+  currentValue  Decimal?
+  ownerId       String
+  owner         User         @relation(fields: [ownerId], references: [id])
+  tenants       Tenant[]
+  expenses      Expense[]
+  documents     Document[]
+  createdAt     DateTime     @default(now())
+}
+
+model Tenant {
+  id        String               @id @default(cuid())
+  firstName String
+  lastName  String
+  email     String
+  phone     String?
+  propertyId String
+  property  Property             @relation(fields: [propertyId], references: [id])
+  leaseStart DateTime
+  leaseEnd  DateTime?
+  rentAmount Decimal
+  deposit   Decimal
+  payments  Payment[]
+  documents Document[]
+  requests  MaintenanceRequest[]
+  createdAt DateTime             @default(now())
+}
+
+model Payment {
+  id        String        @id @default(cuid())
+  tenantId  String
+  tenant    Tenant        @relation(fields: [tenantId], references: [id])
+  amount    Decimal
+  date      DateTime
+  type      PaymentType   @default(RENT)
+  status    PaymentStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+}
+
+model Expense {
+  id          String          @id @default(cuid())
+  propertyId  String
+  property    Property        @relation(fields: [propertyId], references: [id])
+  category    ExpenseCategory
+  amount      Decimal
+  date        DateTime
+  description String?
+  receipt     String? // S3 URL
+  createdAt   DateTime        @default(now())
+}
+
+model Document {
+  id         String       @id @default(cuid())
+  name       String
+  type       DocumentType
+  url        String // S3 URL
+  propertyId String?
+  property   Property?    @relation(fields: [propertyId], references: [id])
+  tenantId   String?
+  tenant     Tenant?      @relation(fields: [tenantId], references: [id])
+  uploadedAt DateTime     @default(now())
+}
+
+model MaintenanceRequest {
+  id          String        @id @default(cuid())
+  tenantId    String
+  tenant      Tenant        @relation(fields: [tenantId], references: [id])
+  category    String // plumbing, electrical, etc.
+  description String
+  status      RequestStatus @default(PENDING)
+  priority    Priority      @default(NORMAL)
+  createdAt   DateTime      @default(now())
+  resolvedAt  DateTime?
+}
+
+enum Role {
+  MANAGER
+  TENANT
+  ADMIN
+}
+
+enum PropertyType {
+  APARTMENT
+  HOUSE
+  COMMERCIAL
+}
+
+enum PaymentType {
+  RENT
+  DEPOSIT
+  NEBENKOSTEN
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  OVERDUE
+}
+
+enum ExpenseCategory {
+  HEATING
+  WATER
+  TRASH
+  INSURANCE
+  TAX
+  MAINTENANCE
+  REPAIR
+  MORTGAGE
+  OTHER
+}
+
+enum DocumentType {
+  CONTRACT
+  INVOICE
+  CERTIFICATE
+  CORRESPONDENCE
+  ID
+  OTHER
+}
+
+enum RequestStatus {
+  PENDING
+  IN_PROGRESS
+  RESOLVED
+  CANCELLED
+}
+
+enum Priority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}

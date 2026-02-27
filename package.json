@@ -1,0 +1,49 @@
+{
+  "name": "propmaster",
+  "version": "1.0.0",
+  "description": "Real Estate Management SaaS for German Property Managers",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "postinstall": "prisma generate"
+  },
+  "keywords": [
+    "real-estate",
+    "property-management",
+    "nextjs",
+    "prisma",
+    "postgresql"
+  ],
+  "author": "David",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.469.0",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "recharts": "^2.15.0",
+    "tailwind-merge": "^2.7.0",
+    "tailwindcss-animate": "^1.0.7",
+    "typescript": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "autoprefixer": "latest",
+    "eslint": "latest",
+    "eslint-config-next": "latest",
+    "postcss": "latest",
+    "prisma": "^5.22.0",
+    "tailwindcss": "latest"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
