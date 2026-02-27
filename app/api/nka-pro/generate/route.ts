@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     }
 
     // Fetch accounting period with costs
-    const period = await prisma.accountingPeriod.findUnique({
+    const periodData = await prisma.accountingPeriod.findUnique({
       where: { id: periodId },
       include: {
         costItems: {
@@ -26,27 +26,27 @@ export async function GET(request: Request) {
             category: true
           }
         },
-        property: {
-          include: {
-            tenants: {
-              where: {
-                OR: [
-                  { leaseEnd: null },
-                  { leaseEnd: { gte: new Date(period?.startDate || new Date()) } }
-                ]
-              }
-            }
-          }
-        }
+        property: true
       }
     })
 
-    if (!period) {
+    if (!periodData) {
       return NextResponse.json(
         { error: 'Accounting period not found' },
         { status: 404 }
       )
     }
+
+    // Fetch all tenants for this property (active during period)
+    const allTenants = await prisma.tenant.findMany({
+      where: {
+        propertyId: periodData.property.id,
+        OR: [
+          { leaseEnd: null },
+          { leaseEnd: { gte: periodData.startDate } }
+        ]
+      }
+    })
 
     // Fetch tenant
     const tenant = await prisma.tenant.findUnique({
@@ -57,8 +57,8 @@ export async function GET(request: Request) {
             readings: {
               where: {
                 readingDate: {
-                  gte: period.startDate,
-                  lte: period.endDate
+                  gte: periodData.startDate,
+                  lte: periodData.endDate
                 }
               }
             }
@@ -109,7 +109,7 @@ export async function GET(request: Request) {
         leaseStart: tenant.leaseStart,
         leaseEnd: tenant.leaseEnd
       },
-      allTenants: period.property.tenants.map(t => ({
+      allTenants: allTenants.map(t => ({
         id: t.id,
         squareMeters: t.squareMeters ? Number(t.squareMeters) : null,
         numberOfPersons: t.numberOfPersons,
@@ -117,7 +117,7 @@ export async function GET(request: Request) {
         leaseStart: t.leaseStart,
         leaseEnd: t.leaseEnd
       })),
-      costItems: period.costItems.map(item => ({
+      costItems: periodData.costItems.map(item => ({
         category: {
           allocationType: item.category.allocationType,
           nameDE: item.category.nameDE
@@ -125,10 +125,10 @@ export async function GET(request: Request) {
         totalAmount: Number(item.totalAmount),
         allocableAmount: item.allocableAmount ? Number(item.allocableAmount) : null
       })),
-      periodStart: period.startDate,
-      periodEnd: period.endDate,
-      totalSquareMeters: period.property.totalSquareMeters ? Number(period.property.totalSquareMeters) : 0,
-      totalUnits: period.property.units,
+      periodStart: periodData.startDate,
+      periodEnd: periodData.endDate,
+      totalSquareMeters: periodData.property.totalSquareMeters ? Number(periodData.property.totalSquareMeters) : 0,
+      totalUnits: periodData.property.units,
       meterReadings,
       advancePayments: advancePayments.map(adv => ({
         totalPaid: Number(adv.totalPaid)
@@ -150,11 +150,11 @@ export async function GET(request: Request) {
     // Return comprehensive result
     return NextResponse.json({
       period: {
-        id: period.id,
-        year: period.year,
-        startDate: period.startDate,
-        endDate: period.endDate,
-        status: period.status
+        id: periodData.id,
+        year: periodData.year,
+        startDate: periodData.startDate,
+        endDate: periodData.endDate,
+        status: periodData.status
       },
       tenant: {
         id: tenant.id,
@@ -166,12 +166,12 @@ export async function GET(request: Request) {
         leaseEnd: tenant.leaseEnd
       },
       property: {
-        id: period.property.id,
-        address: period.property.address,
-        city: period.property.city,
-        totalSquareMeters: period.property.totalSquareMeters,
-        totalUnits: period.property.units,
-        occupiedUnits: period.property.tenants.length
+        id: periodData.property.id,
+        address: periodData.property.address,
+        city: periodData.property.city,
+        totalSquareMeters: periodData.property.totalSquareMeters,
+        totalUnits: periodData.property.units,
+        occupiedUnits: allTenants.length
       },
       calculation: result
     })

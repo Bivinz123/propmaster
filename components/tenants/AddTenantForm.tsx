@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select } from '@/components/ui/select'
+import { SimpleSelect } from '@/components/ui/simple-select'
 
 interface Property {
   id: string
@@ -170,7 +170,7 @@ export function AddTenantForm({ open, onOpenChange, onSuccess, preSelectedProper
 
           <div className="space-y-2">
             <Label htmlFor="propertyId">Property *</Label>
-            <Select
+            <SimpleSelect
               id="propertyId"
               name="propertyId"
               value={formData.propertyId}
@@ -183,7 +183,7 @@ export function AddTenantForm({ open, onOpenChange, onSuccess, preSelectedProper
                   {property.address}, {property.city}
                 </option>
               ))}
-            </Select>
+            </SimpleSelect>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">

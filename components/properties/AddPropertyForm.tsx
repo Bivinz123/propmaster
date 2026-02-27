@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select } from '@/components/ui/select'
+import { SimpleSelect } from '@/components/ui/simple-select'
 
 interface AddPropertyFormProps {
   open: boolean
@@ -124,7 +124,7 @@ export function AddPropertyForm({ open, onOpenChange, onSuccess }: AddPropertyFo
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="type">Type *</Label>
-              <Select
+              <SimpleSelect
                 id="type"
                 name="type"
                 value={formData.type}
@@ -134,7 +134,7 @@ export function AddPropertyForm({ open, onOpenChange, onSuccess }: AddPropertyFo
                 <option value="APARTMENT">Apartment</option>
                 <option value="HOUSE">House</option>
                 <option value="COMMERCIAL">Commercial</option>
-              </Select>
+              </SimpleSelect>
             </div>
 
             <div className="space-y-2">

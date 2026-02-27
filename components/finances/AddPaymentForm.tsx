@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select } from '@/components/ui/select'
+import { SimpleSelect } from '@/components/ui/simple-select'
 
 interface Tenant {
   id: string
@@ -113,7 +113,7 @@ export function AddPaymentForm({ open, onOpenChange, onSuccess, preSelectedTenan
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="tenantId">Tenant *</Label>
-            <Select
+            <SimpleSelect
               id="tenantId"
               name="tenantId"
               value={formData.tenantId}
@@ -126,13 +126,13 @@ export function AddPaymentForm({ open, onOpenChange, onSuccess, preSelectedTenan
                   {tenant.firstName} {tenant.lastName} - {tenant.property.address}
                 </option>
               ))}
-            </Select>
+            </SimpleSelect>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="type">Payment Type *</Label>
-              <Select
+              <SimpleSelect
                 id="type"
                 name="type"
                 value={formData.type}
@@ -142,12 +142,12 @@ export function AddPaymentForm({ open, onOpenChange, onSuccess, preSelectedTenan
                 <option value="RENT">Rent</option>
                 <option value="DEPOSIT">Deposit</option>
                 <option value="NEBENKOSTEN">Nebenkosten</option>
-              </Select>
+              </SimpleSelect>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="status">Status *</Label>
-              <Select
+              <SimpleSelect
                 id="status"
                 name="status"
                 value={formData.status}
@@ -157,7 +157,7 @@ export function AddPaymentForm({ open, onOpenChange, onSuccess, preSelectedTenan
                 <option value="PAID">Paid</option>
                 <option value="PENDING">Pending</option>
                 <option value="OVERDUE">Overdue</option>
-              </Select>
+              </SimpleSelect>
             </div>
           </div>
 

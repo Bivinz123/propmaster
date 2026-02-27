@@ -185,7 +185,7 @@ model AccountingPeriod {
 
 model CostCategory {
   id             String           @id @default(cuid())
-  name           String
+  name           String           @unique
   nameDE         String
   allocationType AllocationMethod
   isAllocable    Boolean          @default(true)

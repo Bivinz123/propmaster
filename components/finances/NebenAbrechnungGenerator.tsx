@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Select } from '@/components/ui/select'
+import { SimpleSelect } from '@/components/ui/simple-select'
 import { Label } from '@/components/ui/label'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { generateNebenkostenabrechnungPDF } from '@/lib/pdfUtils'
@@ -100,7 +100,7 @@ export function NebenAbrechnungGenerator() {
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="tenant">Tenant *</Label>
-              <Select
+              <SimpleSelect
                 id="tenant"
                 value={selectedTenant}
                 onChange={(e) => setSelectedTenant(e.target.value)}
@@ -111,12 +111,12 @@ export function NebenAbrechnungGenerator() {
                     {tenant.firstName} {tenant.lastName} - {tenant.property.address}
                   </option>
                 ))}
-              </Select>
+              </SimpleSelect>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="year">Year *</Label>
-              <Select
+              <SimpleSelect
                 id="year"
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
@@ -126,7 +126,7 @@ export function NebenAbrechnungGenerator() {
                     {year}
                   </option>
                 ))}
-              </Select>
+              </SimpleSelect>
             </div>
           </div>
 
