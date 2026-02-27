@@ -230,7 +230,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
             <div className="flex items-center justify-between">
               <CardTitle>Active Tenants</CardTitle>
               <Button size="sm" variant="outline" onClick={() => setShowAddTenantForm(true)}>
-                Add Tenant
+                + Add Tenant
               </Button>
             </div>
           </CardHeader>
@@ -275,8 +275,8 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>Recent Expenses</CardTitle>
-              <Button size="sm" variant="outline">
-                Add Expense
+              <Button size="sm" variant="outline" onClick={() => {/* TODO: Add expense form */}}>
+                + Add Expense
               </Button>
             </div>
           </CardHeader>

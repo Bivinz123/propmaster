@@ -52,7 +52,7 @@ export async function GET() {
       }
     })
 
-    // Recent activity (last 10 events across payments, expenses, and requests)
+    // Recent activity - payments
     const recentPayments = await prisma.payment.findMany({
       take: 5,
       orderBy: { createdAt: 'desc' },
@@ -66,6 +66,7 @@ export async function GET() {
       }
     })
 
+    // Recent activity - expenses
     const recentExpenses = await prisma.expense.findMany({
       take: 5,
       orderBy: { createdAt: 'desc' },
@@ -78,45 +79,21 @@ export async function GET() {
       }
     })
 
-    const recentRequests = await prisma.maintenanceRequest.findMany({
-      take: 5,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        tenant: {
-          select: {
-            firstName: true,
-            lastName: true,
-            property: {
-              select: {
-                address: true
-              }
-            }
-          }
-        }
-      }
-    })
-
     // Combine and sort activity
     const activity = [
       ...recentPayments.map(p => ({
         id: p.id,
         type: 'payment',
-        description: `Rent payment ${p.status.toLowerCase()} from ${p.tenant.firstName} ${p.tenant.lastName}`,
+        description: `${p.type} payment ${p.status.toLowerCase()} from ${p.tenant.firstName} ${p.tenant.lastName}`,
         amount: Number(p.amount),
         time: p.createdAt,
       })),
       ...recentExpenses.map(e => ({
         id: e.id,
         type: 'expense',
-        description: `${e.category} expense: ${e.property.address}`,
+        description: `${e.category} expense: ${e.property.address}${e.description ? ' - ' + e.description : ''}`,
         amount: -Number(e.amount),
         time: e.createdAt,
-      })),
-      ...recentRequests.map(r => ({
-        id: r.id,
-        type: 'maintenance',
-        description: `${r.priority} ${r.category} request from ${r.tenant.firstName} ${r.tenant.lastName}`,
-        time: r.createdAt,
       })),
     ]
       .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
