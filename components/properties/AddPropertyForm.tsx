@@ -24,6 +24,7 @@ export function AddPropertyForm({ open, onOpenChange, onSuccess }: AddPropertyFo
     units: '1',
     purchasePrice: '',
     currentValue: '',
+    totalSquareMeters: '',
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -54,6 +55,7 @@ export function AddPropertyForm({ open, onOpenChange, onSuccess }: AddPropertyFo
         units: '1',
         purchasePrice: '',
         currentValue: '',
+        totalSquareMeters: '',
       })
 
       onSuccess?.()
@@ -149,6 +151,25 @@ export function AddPropertyForm({ open, onOpenChange, onSuccess }: AddPropertyFo
                 required
               />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="totalSquareMeters">
+              Gesamtwohnfläche (m²)
+            </Label>
+            <Input
+              id="totalSquareMeters"
+              name="totalSquareMeters"
+              type="number"
+              step="0.01"
+              min="0"
+              value={formData.totalSquareMeters}
+              onChange={handleChange}
+              placeholder="800.00"
+            />
+            <p className="text-xs text-slate-500">
+              Für Nebenkostenabrechnung: Summe aller Wohnflächen
+            </p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">

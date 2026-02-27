@@ -92,6 +92,7 @@ export async function POST(request: Request) {
         units: parseInt(body.units),
         purchasePrice: body.purchasePrice ? parseFloat(body.purchasePrice) : null,
         currentValue: body.currentValue ? parseFloat(body.currentValue) : null,
+        totalSquareMeters: body.totalSquareMeters ? parseFloat(body.totalSquareMeters) : null,
         ownerId: user.id,
       },
       include: {

@@ -165,7 +165,13 @@ async function seedCostCategories() {
   for (const category of defaultCategories) {
     await prisma.costCategory.upsert({
       where: { name: category.name },
-      update: category,
+      update: {
+        nameDE: category.nameDE,
+        allocationType: category.allocationType,
+        betrkvSection: category.betrkvSection,
+        sortOrder: category.sortOrder,
+        isAllocable: category.isAllocable
+      },
       create: category
     })
   }

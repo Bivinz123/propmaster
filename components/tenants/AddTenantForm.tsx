@@ -34,6 +34,9 @@ export function AddTenantForm({ open, onOpenChange, onSuccess, preSelectedProper
     leaseEnd: '',
     rentAmount: '',
     deposit: '',
+    squareMeters: '',
+    numberOfPersons: '1',
+    eigentumsanteil: '',
   })
 
   useEffect(() => {
@@ -88,6 +91,9 @@ export function AddTenantForm({ open, onOpenChange, onSuccess, preSelectedProper
         leaseEnd: '',
         rentAmount: '',
         deposit: '',
+        squareMeters: '',
+        numberOfPersons: '1',
+        eigentumsanteil: '',
       })
 
       onSuccess?.()
@@ -240,6 +246,73 @@ export function AddTenantForm({ open, onOpenChange, onSuccess, preSelectedProper
                 required
                 placeholder="2550.00"
               />
+            </div>
+          </div>
+
+          <div className="border-t pt-4 mt-4">
+            <h3 className="font-semibold mb-3 text-sm text-slate-700">
+              Nebenkostenabrechnung-Daten
+            </h3>
+            
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="squareMeters">
+                  Wohnfläche (m²) *
+                </Label>
+                <Input
+                  id="squareMeters"
+                  name="squareMeters"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formData.squareMeters}
+                  onChange={handleChange}
+                  required
+                  placeholder="65.50"
+                />
+                <p className="text-xs text-slate-500">
+                  Für Verteilung nach Wohnfläche
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="numberOfPersons">
+                  Personenzahl *
+                </Label>
+                <Input
+                  id="numberOfPersons"
+                  name="numberOfPersons"
+                  type="number"
+                  min="1"
+                  value={formData.numberOfPersons}
+                  onChange={handleChange}
+                  required
+                  placeholder="2"
+                />
+                <p className="text-xs text-slate-500">
+                  Für Verteilung nach Personen
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2 mt-4">
+              <Label htmlFor="eigentumsanteil">
+                Miteigentumsanteil (MEA)
+              </Label>
+              <Input
+                id="eigentumsanteil"
+                name="eigentumsanteil"
+                type="number"
+                step="0.0001"
+                min="0"
+                max="1"
+                value={formData.eigentumsanteil}
+                onChange={handleChange}
+                placeholder="0.0812 (= 8,12%)"
+              />
+              <p className="text-xs text-slate-500">
+                Optional: Nur bei WEG-Objekten (z.B. 0.0812 = 8,12%)
+              </p>
             </div>
           </div>
 

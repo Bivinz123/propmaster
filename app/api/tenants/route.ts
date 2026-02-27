@@ -87,6 +87,9 @@ export async function POST(request: Request) {
         leaseEnd: body.leaseEnd ? new Date(body.leaseEnd) : null,
         rentAmount: parseFloat(body.rentAmount),
         deposit: parseFloat(body.deposit),
+        squareMeters: body.squareMeters ? parseFloat(body.squareMeters) : null,
+        numberOfPersons: body.numberOfPersons ? parseInt(body.numberOfPersons) : 1,
+        eigentumsanteil: body.eigentumsanteil ? parseFloat(body.eigentumsanteil) : null,
       },
       include: {
         property: {
