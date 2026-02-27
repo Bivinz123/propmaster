@@ -20,6 +20,7 @@ const navigation = [
   { name: 'Properties', href: '/dashboard/properties', icon: Building2 },
   { name: 'Tenants', href: '/dashboard/tenants', icon: Users },
   { name: 'Finances', href: '/dashboard/finances', icon: Euro },
+  { name: 'Nebenkosten', href: '/dashboard/finances/nebenkostenabrechnung', icon: FileText },
   { name: 'Documents', href: '/dashboard/documents', icon: FileText },
 ]
 
