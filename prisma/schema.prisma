@@ -20,38 +20,45 @@ model User {
 }
 
 model Property {
-  id            String       @id @default(cuid())
-  address       String
-  city          String
-  postalCode    String
-  type          PropertyType
-  units         Int
-  purchasePrice Decimal?
-  currentValue  Decimal?
-  ownerId       String
-  owner         User         @relation(fields: [ownerId], references: [id])
-  tenants       Tenant[]
-  expenses      Expense[]
-  documents     Document[]
-  createdAt     DateTime     @default(now())
+  id                String             @id @default(cuid())
+  address           String
+  city              String
+  postalCode        String
+  type              PropertyType
+  units             Int
+  purchasePrice     Decimal?
+  currentValue      Decimal?
+  totalSquareMeters Decimal? // Gesamtwohnfläche
+  ownerId           String
+  owner             User               @relation(fields: [ownerId], references: [id])
+  tenants           Tenant[]
+  expenses          Expense[]
+  documents         Document[]
+  accountingPeriods AccountingPeriod[]
+  createdAt         DateTime           @default(now())
 }
 
 model Tenant {
-  id        String               @id @default(cuid())
-  firstName String
-  lastName  String
-  email     String
-  phone     String?
-  propertyId String
-  property  Property             @relation(fields: [propertyId], references: [id])
-  leaseStart DateTime
-  leaseEnd  DateTime?
-  rentAmount Decimal
-  deposit   Decimal
-  payments  Payment[]
-  documents Document[]
-  requests  MaintenanceRequest[]
-  createdAt DateTime             @default(now())
+  id              String               @id @default(cuid())
+  firstName       String
+  lastName        String
+  email           String
+  phone           String?
+  propertyId      String
+  property        Property             @relation(fields: [propertyId], references: [id])
+  leaseStart      DateTime
+  leaseEnd        DateTime?
+  rentAmount      Decimal
+  deposit         Decimal
+  squareMeters    Decimal? // Wohnfläche in m²
+  numberOfPersons Int                  @default(1) // Anzahl Personen
+  eigentumsanteil Decimal? // MEA (Miteigentumsanteil) 0.0812 = 8.12%
+  payments        Payment[]
+  documents       Document[]
+  requests        MaintenanceRequest[]
+  meters          ConsumptionMeter[]
+  advancePayments AdvancePayment[]
+  createdAt       DateTime             @default(now())
 }
 
 model Payment {
@@ -158,4 +165,106 @@ enum Priority {
   NORMAL
   HIGH
   URGENT
+}
+
+// Append these models to the END of schema.prisma
+
+model AccountingPeriod {
+  id              String           @id @default(cuid())
+  propertyId      String
+  property        Property         @relation(fields: [propertyId], references: [id])
+  startDate       DateTime
+  endDate         DateTime
+  year            Int
+  status          PeriodStatus     @default(DRAFT)
+  costItems       CostItem[]
+  advancePayments AdvancePayment[]
+  createdAt       DateTime         @default(now())
+  finalizedAt     DateTime?
+}
+
+model CostCategory {
+  id             String           @id @default(cuid())
+  name           String
+  nameDE         String
+  allocationType AllocationMethod
+  isAllocable    Boolean          @default(true)
+  betrkvSection  String?
+  sortOrder      Int              @default(0)
+  costItems      CostItem[]
+}
+
+model CostItem {
+  id              String           @id @default(cuid())
+  periodId        String
+  period          AccountingPeriod @relation(fields: [periodId], references: [id])
+  categoryId      String
+  category        CostCategory     @relation(fields: [categoryId], references: [id])
+  totalAmount     Decimal
+  allocableAmount Decimal?
+  description     String?
+  invoiceNumber   String?
+  invoiceDate     DateTime?
+  createdAt       DateTime         @default(now())
+}
+
+model ConsumptionMeter {
+  id          String         @id @default(cuid())
+  tenantId    String
+  tenant      Tenant         @relation(fields: [tenantId], references: [id])
+  meterType   MeterType
+  meterNumber String
+  location    String?
+  readings    MeterReading[]
+  createdAt   DateTime       @default(now())
+}
+
+model MeterReading {
+  id            String           @id @default(cuid())
+  meterId       String
+  meter         ConsumptionMeter @relation(fields: [meterId], references: [id])
+  readingDate   DateTime
+  value         Decimal
+  previousValue Decimal?
+  consumption   Decimal?
+  notes         String?
+  createdAt     DateTime         @default(now())
+}
+
+model AdvancePayment {
+  id            String           @id @default(cuid())
+  tenantId      String
+  tenant        Tenant           @relation(fields: [tenantId], references: [id])
+  periodId      String
+  period        AccountingPeriod @relation(fields: [periodId], references: [id])
+  monthlyAmount Decimal
+  monthsPaid    Int
+  totalPaid     Decimal
+  startMonth    DateTime
+  endMonth      DateTime
+  createdAt     DateTime         @default(now())
+}
+
+enum PeriodStatus {
+  DRAFT
+  FINALIZED
+  SENT
+  ARCHIVED
+}
+
+enum AllocationMethod {
+  PER_UNIT
+  PER_SQM
+  PER_PERSON
+  CONSUMPTION
+  MEA
+  HEATING_MIXED
+}
+
+enum MeterType {
+  HEATING
+  HOT_WATER
+  COLD_WATER
+  ELECTRICITY
+  GAS
 }

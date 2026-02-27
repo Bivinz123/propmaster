@@ -1,0 +1,107 @@
+// Extended Prisma Schema for Professional Nebenkostenabrechnung
+// Add these models to your existing schema.prisma
+
+model AccountingPeriod {
+  id         String   @id @default(cuid())
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id])
+  startDate  DateTime
+  endDate    DateTime
+  year       Int
+  status     PeriodStatus @default(DRAFT)
+  costItems  CostItem[]
+  advancePayments AdvancePayment[]
+  createdAt  DateTime @default(now())
+  finalizedAt DateTime?
+}
+
+model CostCategory {
+  id             String   @id @default(cuid())
+  name           String
+  nameDE         String   // German name
+  allocationType AllocationMethod
+  isAllocable    Boolean  @default(true)
+  betrkvSection  String?  // §2 Nr. 1-17 BetrKV
+  sortOrder      Int      @default(0)
+  costItems      CostItem[]
+}
+
+model CostItem {
+  id              String @id @default(cuid())
+  periodId        String
+  period          AccountingPeriod @relation(fields: [periodId], references: [id])
+  categoryId      String
+  category        CostCategory @relation(fields: [categoryId], references: [id])
+  totalAmount     Decimal
+  allocableAmount Decimal?  // Can be less than total (non-allocable parts)
+  description     String?
+  invoiceNumber   String?
+  invoiceDate     DateTime?
+  createdAt       DateTime @default(now())
+}
+
+model ConsumptionMeter {
+  id          String   @id @default(cuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  meterType   MeterType
+  meterNumber String
+  location    String?
+  readings    MeterReading[]
+  createdAt   DateTime @default(now())
+}
+
+model MeterReading {
+  id            String   @id @default(cuid())
+  meterId       String
+  meter         ConsumptionMeter @relation(fields: [meterId], references: [id])
+  readingDate   DateTime
+  value         Decimal
+  previousValue Decimal?
+  consumption   Decimal?
+  notes         String?
+  createdAt     DateTime @default(now())
+}
+
+model AdvancePayment {
+  id            String   @id @default(cuid())
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id])
+  periodId      String
+  period        AccountingPeriod @relation(fields: [periodId], references: [id])
+  monthlyAmount Decimal
+  monthsPaid    Int
+  totalPaid     Decimal
+  startMonth    DateTime
+  endMonth      DateTime
+  createdAt     DateTime @default(now())
+}
+
+// Extend existing Tenant model with these fields:
+// squareMeters      Decimal?  // Wohnfläche in m²
+// numberOfPersons   Int @default(1)
+// eigentumsanteil   Decimal?  // MEA (Miteigentumsanteil) as decimal (e.g., 0.0812 = 8.12%)
+
+enum PeriodStatus {
+  DRAFT
+  FINALIZED
+  SENT
+  ARCHIVED
+}
+
+enum AllocationMethod {
+  PER_UNIT         // Nach Anzahl Einheiten
+  PER_SQM          // Nach Wohnfläche (m²)
+  PER_PERSON       // Nach Personenzahl
+  CONSUMPTION      // Nach Verbrauch (Zähler)
+  MEA              // Nach Miteigentumsanteil
+  HEATING_MIXED    // Sonderfall Heizung (70% Verbrauch, 30% Fläche)
+}
+
+enum MeterType {
+  HEATING        // Heizung (kWh oder m³)
+  HOT_WATER      // Warmwasser (m³)
+  COLD_WATER     // Kaltwasser (m³)
+  ELECTRICITY    // Strom (kWh)
+  GAS            // Gas (m³)
+}
