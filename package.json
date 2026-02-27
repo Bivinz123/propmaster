@@ -4,10 +4,11 @@
   "description": "Real Estate Management SaaS for German Property Managers",
   "scripts": {
     "dev": "next dev",
-    "build": "prisma db push --accept-data-loss && prisma generate && next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "vercel-build": "prisma generate && prisma db push --accept-data-loss --skip-generate && next build"
   },
   "keywords": [
     "real-estate",
