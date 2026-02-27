@@ -94,8 +94,6 @@ const DialogFooter = ({
 )
 DialogFooter.displayName = "DialogFooter"
 
-const DialogTrigger = Button
-
 export {
   Dialog,
   DialogContent,
@@ -103,14 +101,4 @@ export {
   DialogFooter,
   DialogTitle,
   DialogDescription,
-  DialogTrigger,
 }
-
-// Import Button from the same file since it's a simple component
-const Button = React.forwardRef<
-  HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement>
->(({ className, ...props }, ref) => (
-  <button ref={ref} className={className} {...props} />
-))
-Button.displayName = "Button"
